@@ -18,7 +18,9 @@ namespace NOLA_API.Extensions
             opt.User.RequireUniqueEmail = true;
         }).AddEntityFrameworkStores<DataContext>();
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+        var envToken = System.Environment.GetEnvironmentVariable("TOKEN_KEY");
+        var configToken = config["TokenKey"];
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(envToken ?? configToken));
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opt =>

@@ -17,7 +17,9 @@ namespace NOLA_API.Extensions
             services.AddSwaggerGen();
             services.AddDbContext<DataContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                var envDb = System.Environment.GetEnvironmentVariable("CONNECTION_STRING");
+                var configDb = config.GetConnectionString("DefaultConnection");
+                opt.UseSqlite();
             });
             services.AddCors(opt =>
             {
