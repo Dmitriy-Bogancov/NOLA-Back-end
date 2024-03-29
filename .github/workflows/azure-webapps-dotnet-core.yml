@@ -54,8 +54,9 @@ jobs:
       - name: json-to-file
         uses: devops-actions/json-to-file@v1.0.3
         with:
-          json: '{"Logging": {"LogLevel": {"Default": "Information","Microsoft.AspNetCore": "Warning"}},"AllowedHosts": "*","ConnectionStrings":{"DefaultConnection":"${{secrets.CONNECTION_STRING}}"},"TokenKey" : "${{secrets.TOKEN_KEY}}"'
+          json: '{"Logging": {"LogLevel": {"Default": "Information","Microsoft.AspNetCore": "Warning"}},"AllowedHosts": "*","ConnectionStrings":{"DefaultConnection":"${{secrets.CONNECTION_STRING}}"},"TokenKey" : "${{secrets.TOKEN_KEY}}"}'
           filename: 'appsettings.json'
+    
           
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -83,7 +84,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
-          
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
