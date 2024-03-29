@@ -23,8 +23,6 @@ env:
   AZURE_WEBAPP_NAME: nola-be    # set this to the name of your Azure Web App
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.0'                 # set this to the .NET Core version to use
-  TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
-  CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
 
 on:
   push:
@@ -53,6 +51,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
           
+      - name: json-to-file
+        uses: devops-actions/json-to-file@v1.0.3
+        with:
+          json: '{"Logging": {"LogLevel": {"Default": "Information","Microsoft.AspNetCore": "Warning"}},"AllowedHosts": "*","ConnectionStrings":{"DefaultConnection":"${{secrets.CONNECTION_STRING}}"},"TokenKey" : ${{secrets.TOKEN_KEY}}''
+          filename: 'appsettings.json'
+          
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
@@ -80,6 +84,13 @@ jobs:
         with:
           name: .net-app
 
+          ##replase the connection string in appsettings.json with secrets
+      - name: Replace Connection String
+        run: |
+          $connectionString = "${{ env.CONNECTION_STRING }}"
+          $path = "C:\Users\runneradmin\actions-runner\_work\Nola-Be\Nola-Be\myapp\appsettings.json"
+          $content = Get-Content $path
+          $content -replace 'Server=(localdb)\\mssqllocaldb;Database=NolaBe;Trusted_Connection=True;MultipleActiveResultSets=true', $connectionString | Set-Content $path
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
