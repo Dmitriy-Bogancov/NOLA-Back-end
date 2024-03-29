@@ -23,6 +23,8 @@ env:
   AZURE_WEBAPP_NAME: nola-be    # set this to the name of your Azure Web App
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.0'                 # set this to the .NET Core version to use
+  TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
+  CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
 
 on:
   push:
@@ -37,11 +39,6 @@ jobs:
     runs-on: ubuntu-latest 
     steps:
       - uses: actions/checkout@v3
-        
-      - name: Set Token variable
-        run: echo "TOKEN_KEY =${{ secrets.TOKEN_KEY }}" >> $GITHUB_ENV
-      - name: Set Connection string variable
-        run: echo "CONNECTION_STRING=${{ secrets.CONNECTION_STRING }}" >> $GITHUB_ENV
       
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v2
