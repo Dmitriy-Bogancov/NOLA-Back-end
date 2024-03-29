@@ -52,6 +52,12 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
+              
+      ## set appsetings.json values ConnectionStrings.DefaultConnection to the value of the secret CONNECTION_STRING and TokenKey to the value of the secret TOKEN_KEY
+      - name: Set appsettings.json values
+        run: |
+          sed -i "s/\"ConnectionStrings\": {\"DefaultConnection\": \"\"}/\"ConnectionStrings\": {\"DefaultConnection\": \"${{ env.CONNECTION_STRING }}\"}/g" ./appsettings.json
+          sed -i "s/\"TokenKey\": \"\"/\"TokenKey\": \"${{ env.TOKEN_KEY }}\"/g" ./appsettings.json
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
