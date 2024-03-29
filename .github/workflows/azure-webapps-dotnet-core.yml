@@ -35,7 +35,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    steps:
+      - name: Set environment variable
+      run: echo "CONNECTION_STRING=${{ secrets.CONNECTION_STRING }}" >> $GITHUB_ENV
+      
     steps:
       - uses: actions/checkout@v3
 
