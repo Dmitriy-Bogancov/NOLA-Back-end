@@ -18,7 +18,7 @@ namespace NOLA_API.Extensions
             opt.User.RequireUniqueEmail = true;
         }).AddEntityFrameworkStores<DataContext>();
 
-        var envToken = System.Environment.GetEnvironmentVariable("TOKEN_KEY");
+        var envToken = System.Environment.GetEnvironmentVariable("TOKEN_KEY", EnvironmentVariableTarget.Machine);
         var configToken = config["TokenKey"];
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(envToken ?? configToken));
         
