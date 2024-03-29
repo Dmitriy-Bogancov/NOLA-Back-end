@@ -83,14 +83,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
-
-          ##replase the connection string in appsettings.json with secrets
-      - name: Replace Connection String
-        run: |
-          $connectionString = "${{ env.CONNECTION_STRING }}"
-          $path = "C:\Users\runneradmin\actions-runner\_work\Nola-Be\Nola-Be\myapp\appsettings.json"
-          $content = Get-Content $path
-          $content -replace 'Server=(localdb)\\mssqllocaldb;Database=NolaBe;Trusted_Connection=True;MultipleActiveResultSets=true', $connectionString | Set-Content $path
+          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
