@@ -5,26 +5,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NOLA_API.Application.Advertisements
 {
-   
-public class Show
-{
-    public class Query : IRequest<Result<List<Advertisement>>> { }
-    
-    public class Handler : IRequestHandler<Query, Result<List<Advertisement>>>
+    public class Show
     {
-        private readonly DataContext _context;
+        public class Query : IRequest<Result<List<Advertisement>>> { }
 
-        public Handler(DataContext context)
+        public class Handler : IRequestHandler<Query, Result<List<Advertisement>>>
         {
-            _context = context;
-        }
-        
-        public async Task<Result<List<Advertisement>>> Handle(Query request, CancellationToken cancellationToken)
-        {
-            var ads = await _context.Ads
-                .ToListAsync(cancellationToken);
-            return Result<List<Advertisement>>.Success(ads);
+            private readonly DataContext _context;
+
+            public Handler(DataContext context)
+            {
+                _context = context;
+            }
+
+            public async Task<Result<List<Advertisement>>> Handle(Query request, CancellationToken cancellationToken)
+            {
+                var ads = await _context.Ads
+                    .ToListAsync(cancellationToken);
+                return Result<List<Advertisement>>.Success(ads);
+            }
         }
     }
-}
 }
