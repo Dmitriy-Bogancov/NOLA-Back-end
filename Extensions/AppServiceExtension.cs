@@ -19,7 +19,7 @@ namespace NOLA_API.Extensions
             {
                 var envDb = System.Environment.GetEnvironmentVariable("CONNECTION_STRING", EnvironmentVariableTarget.Machine);
                 var configDb = config.GetConnectionString("DefaultConnection");
-                opt.UseSqlite();
+                opt.UseNpgsql(envDb ?? configDb);
             });
             services.AddCors(opt =>
             {

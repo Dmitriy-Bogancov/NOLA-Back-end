@@ -51,24 +51,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
           
-#      - name: json-to-file
-#        uses: devops-actions/json-to-file@v1.0.3
-#        with:
-#          json: '{"Logging": {"LogLevel": {"Default": "Information","Microsoft.AspNetCore": "Warning"}},"AllowedHosts": "*","ConnectionStrings":{"DefaultConnection":"${{secrets.CONNECTION_STRING}}"},"TokenKey" : "${{secrets.TOKEN_KEY}}"}'
-#          filename: 'appsettings.json'
-      - name: Replace Connection String
-        run: |
-          $connectionString = "${{ env.CONNECTION_STRING }}"
-          $path = ".\appsettings.json"
-          $content = Get-Content $path
-          $content -replace '"DefaultConnection": ""', "DefaultConnection": "$connectionString" | Set-Content $path
-      - name: Replace Connection String
-        run: |
-          $tokenKey = "${{ env.TOKEN_KEY }}"
-          $path = ".\appsettings.json"
-          $content = Get-Content $path
-          $content -replace '"TokenKey": ""', "TokenKey": "$tokenKey" | Set-Content $path   
-          
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
@@ -84,7 +66,7 @@ jobs:
   deploy:
     permissions:
       contents: none
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     environment:
       name: 'Development'
