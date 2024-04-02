@@ -14,11 +14,10 @@ namespace NOLA_API.Controllers
             return HandleResult(await Mediator.Send(new Show.Query()));
         }
 
-        //xpath to get advertisement by id
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAdvertisement(int id)
+        public async Task<IActionResult> GetAdvertisement(Guid id)
         {
-            return HandleResult(await Mediator.Send(new Show.Query {  }));
+            return HandleResult(await Mediator.Send(new GetOne.Query { Id = id }));
         }
     }
 }
