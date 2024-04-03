@@ -45,11 +45,6 @@ namespace NOLA_API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
-            if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
-            {
-                ModelState.AddModelError("username", "Username is already taken!");
-                return ValidationProblem();
-            }
             if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
             {
                 ModelState.AddModelError("email", "Email is already taken!");
@@ -58,7 +53,7 @@ namespace NOLA_API.Controllers
             var user = new AppUser
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Username,
+                UserName = registerDto.Email.Split("@")[0].ToLower()
             };
             try
             {
@@ -92,10 +87,10 @@ namespace NOLA_API.Controllers
             return new UserDto
             {
                 Email = user.Email,
-                DisplayName = user.UserName,
                 Image = string.Empty,
+                DisplayName = string.Empty,
+                Username = string.Empty,
                 Token = _tokenService.CreateToken(user),
-                Username = user.UserName
             };
         }
     }
