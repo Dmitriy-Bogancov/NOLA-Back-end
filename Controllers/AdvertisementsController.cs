@@ -5,10 +5,10 @@ using NOLA_API.DataModels;
 
 namespace NOLA_API.Controllers
 {
+    [AllowAnonymous]
     public class AdvertisementsController : BaseApiController
     {
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> GetAdvertisements()
         {
             return HandleResult(await Mediator.Send(new Show.Query()));
