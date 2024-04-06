@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NOLA_API.DataModels;
 using NOLA_API.Domain;
 
@@ -39,7 +40,7 @@ namespace NOLA_API.Persistence
                 {
                     new Advertisement
                     {
-                        
+
                         Title = "Advertisement 1",
                         CreatedAt = DateTime.UtcNow.AddMonths(-2),
                         Banner = "https://www.shutterstock.com/shutterstock/photos/1918797110/display_1500/stock-vector-vector-grass-lawn-grasses-png-lawn-png-young-green-grass-with-sun-glare-1918797110.jpg",
@@ -124,12 +125,12 @@ namespace NOLA_API.Persistence
                             new AdVisitor
                             {
                                 AppUser = users[1],
-                                IsOwner = true                            
+                                IsOwner = true
                             },
                             new AdVisitor
                             {
                                 AppUser = users[0],
-                                IsOwner = false                            
+                                IsOwner = false
                             },
                         }
                     },
@@ -144,7 +145,7 @@ namespace NOLA_API.Persistence
                             new AdVisitor
                             {
                                 AppUser = users[1],
-                                IsOwner = true                            
+                                IsOwner = true
                             }
                         }
                     },
@@ -159,12 +160,12 @@ namespace NOLA_API.Persistence
                             new AdVisitor
                             {
                                 AppUser = users[0],
-                                IsOwner = true                            
+                                IsOwner = true
                             },
                             new AdVisitor
                             {
                                 AppUser = users[1],
-                                IsOwner = false                            
+                                IsOwner = false
                             },
                         }
                     },
@@ -179,12 +180,12 @@ namespace NOLA_API.Persistence
                             new AdVisitor
                             {
                                 AppUser = users[2],
-                                IsOwner = true                            
+                                IsOwner = true
                             },
                             new AdVisitor
                             {
                                 AppUser = users[1],
-                                IsOwner = false                            
+                                IsOwner = false
                             },
                         }
                     },
@@ -199,12 +200,12 @@ namespace NOLA_API.Persistence
                             new AdVisitor
                             {
                                 AppUser = users[0],
-                                IsOwner = true                            
+                                IsOwner = true
                             },
                             new AdVisitor
                             {
                                 AppUser = users[2],
-                                IsOwner = false                            
+                                IsOwner = false
                             },
                         }
                     },
@@ -219,18 +220,21 @@ namespace NOLA_API.Persistence
                             new AdVisitor
                             {
                                 AppUser = users[2],
-                                IsOwner = true                            
+                                IsOwner = true
                             },
                             new AdVisitor
                             {
                                 AppUser = users[1],
-                                IsOwner = false                            
+                                IsOwner = false
                             },
                         }
                     }
                 };
 
-                await context.Ads.AddRangeAsync(ads);
+                foreach (var adv in ads){
+                    context.Ads.Update(adv);
+                }
+
                 await context.SaveChangesAsync();
             }
         }
