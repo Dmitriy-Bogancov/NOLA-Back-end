@@ -5,6 +5,7 @@ using NOLA_API.DataModels;
 
 namespace NOLA_API.Controllers
 {
+    [AllowAnonymous]
     public class AdvertisementsController : BaseApiController
     {
         [HttpGet]
