@@ -5,7 +5,6 @@ using NOLA_API.DataModels;
 
 namespace NOLA_API.Controllers
 {
-    [AllowAnonymous]
     public class AdvertisementsController : BaseApiController
     {
         [HttpGet]
@@ -43,6 +42,10 @@ namespace NOLA_API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
         }
 
-        
+        // [HttpPost("{id}/visit")]
+        // public async Task<IActionResult> Visit(Guid id, [FromHeader]Guid advertisementVisitor)
+        // {
+        //     return HandleResult(await Mediator.Send(new Visit.Command { Id = id, Visitor = visitorId }));
+        // }
     }
 }

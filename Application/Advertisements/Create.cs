@@ -33,16 +33,18 @@ namespace NOLA_API.Application.Advertisements
                     var user = await _context.Users.FirstOrDefaultAsync(x =>
                         x.UserName == _userAccessor.GetUsername());
 
-                    var attendee = new AdVisitor
+                    var owner = new AdVisitor
                     {
                         AppUser = user,
                         Post = request.Advertisement,
                         IsOwner = true
                     };
 
-                    request.Advertisement.Visitors.Add(attendee);
+                    request.Advertisement.Visitors.Add(owner);
 
+                    request.Advertisement.Id = new Guid();
                     _context.Ads.Add(request.Advertisement);
+
                     var result = await _context.SaveChangesAsync(cancellationToken) > 0;
 
                     if (!result) return Result<Unit>.Failure("Failed to create advertisement.");
