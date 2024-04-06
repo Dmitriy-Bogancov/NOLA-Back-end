@@ -34,5 +34,12 @@ namespace NOLA_API.Controllers
             advertisement.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command { Advertisement = advertisement }));
         }
+
+        //[Authorize(Policy = "IsOwner")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAdvertisement(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
+        }
     }
 }
