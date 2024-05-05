@@ -18,8 +18,9 @@ namespace NOLA_API.Extensions
             services.AddDbContext<DataContext>(opt =>
             {
                 var envDb = System.Environment.GetEnvironmentVariable("CONNECTION_STRING", EnvironmentVariableTarget.Machine);
-                var configDb = config.GetConnectionString("DefaultConnection");
+                var configDb = config.GetConnectionString("Remote");
                 opt.UseNpgsql(envDb ?? configDb);
+                //opt.UseSqlite(configDb);
             });
             services.AddCors(opt =>
             {

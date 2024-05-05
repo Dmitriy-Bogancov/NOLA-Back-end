@@ -5,15 +5,13 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NOLA_API.DataModels;
 
-namespace NOLA_API.Application.Advertisements
+namespace NOLA_API.Application.Drafts
 {
- 
-
         public class Create
         {
             public class Command : IRequest<Result<Unit>>
             {
-                public Advertisement Advertisement { get; set; }
+                public Draft Draft { get; set; }
             }
 
             public class Handler : IRequestHandler<Command, Result<Unit>>
@@ -35,18 +33,11 @@ namespace NOLA_API.Application.Advertisements
                     if (user == null) return Result<Unit>.Failure("Looks like you are not logged in.");
                     if (user.EmailConfirmed == false) return Result<Unit>.Failure("Please confirm your email address.");
                     if(string.IsNullOrEmpty(user.UserName) || user.Links.Count == 0) return Result<Unit>.Failure("Please update your profile first.");
-                    var owner = new AdVisitor
-                    {
-                        AppUser = user,
-                        Post = request.Advertisement,
-                        IsOwner = true
-                    };
 
-                    request.Advertisement.Visitors.Add(owner);
+                    request.Draft.UserId = user.Id;
 
-                    request.Advertisement.Id = new Guid();
-                    request.Advertisement.Status = Status.Moderation;
-                    _context.Ads.Add(request.Advertisement);
+                    request.Draft.Id = new Guid();
+                    _context.Drafts.Add(request.Draft);
 
                     var result = await _context.SaveChangesAsync(cancellationToken) > 0;
 

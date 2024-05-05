@@ -11,6 +11,7 @@ public class DataContext : IdentityDbContext<AppUser>
     }
 
     public DbSet<Advertisement> Ads { get; set; }
+    public DbSet<Draft> Drafts { get; set; }
     public DbSet<AdVisitor> AdsVistors { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -27,5 +28,11 @@ public class DataContext : IdentityDbContext<AppUser>
             .HasOne(u => u.Post)
             .WithMany(a => a.Visitors)
             .HasForeignKey(aa => aa.AdvertisementId);
+
+            builder.Entity<Link>(x => x.HasKey(aa => new { aa.AdvertisementId, aa.Id }));
+              builder.Entity<Link>()
+            .HasOne(u => u.Advertisement)
+            .WithMany(a => a.Links)
+            .HasForeignKey(aa => aa.Id);
     }
 }

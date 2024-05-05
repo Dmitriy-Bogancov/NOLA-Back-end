@@ -1,15 +1,16 @@
-
 using MediatR;
 using NOLA_API.Application.Core;
+using NOLA_API.DataModels;
 
-namespace NOLA_API.Application.Advertisements
+namespace NOLA_API.Application.Drafts
 {
-    public class Delete
+    public class Edit
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Guid Id { get; set; }
+            public Draft Draft { get; set; }
         }
+
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
@@ -22,14 +23,17 @@ namespace NOLA_API.Application.Advertisements
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-
-                var ad = await _context.Ads.FindAsync(request.Id);
+                // ReSharper disable once HeapView.BoxingAllocation
+                
+                var ad = await _context.Drafts.FindAsync(request.Draft.Id);
                 if (ad == null) return null;
-                _context.Ads.Remove(ad);
+
+                 ad.Title = request.Draft.Title ?? ad.Title;
+                ad.Description = request.Draft.Description;
+                ad.Banners = request.Draft.Banners;
 
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Unit>.Failure("Failed to create activity");
-
+                if (!result) return Result<Unit>.Failure("Failed to update activity!");
                 return Result<Unit>.Success(Unit.Value);
             }
         }

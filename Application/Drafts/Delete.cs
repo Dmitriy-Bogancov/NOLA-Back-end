@@ -2,7 +2,7 @@
 using MediatR;
 using NOLA_API.Application.Core;
 
-namespace NOLA_API.Application.Advertisements
+namespace NOLA_API.Application.Drafts
 {
     public class Delete
     {
@@ -23,12 +23,12 @@ namespace NOLA_API.Application.Advertisements
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                var ad = await _context.Ads.FindAsync(request.Id);
+                var ad = await _context.Drafts.FindAsync(request.Id);
                 if (ad == null) return null;
-                _context.Ads.Remove(ad);
+                _context.Drafts.Remove(ad);
 
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Unit>.Failure("Failed to create activity");
+                if (!result) return Result<Unit>.Failure("Failed to delete draft");
 
                 return Result<Unit>.Success(Unit.Value);
             }

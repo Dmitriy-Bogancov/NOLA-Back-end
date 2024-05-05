@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using NOLA_API.Domain;
 using NOLA_API.Extensions;
 using NOLA_API.Middleware;
@@ -18,13 +19,40 @@ builder.Services.AddControllers(opt =>
 });
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
-var app = builder.Build();
+builder.Services.AddSwaggerGen(option => {
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "NOLA_API", Version = "v1" });
+    option.CustomSchemaIds(x => x.FullName);
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
+//add swagger bearer authentication
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger(); 
+app.UseSwaggerUI();
 
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
@@ -42,8 +70,8 @@ try
 }
 catch (Exception e)
 {
-   var logger = services.GetRequiredService<ILogger<Program>>();
-   logger.LogError(e, "Migration error");
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(e, "Migration error");
 }
 
 app.Run();

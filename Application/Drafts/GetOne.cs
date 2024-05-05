@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using NOLA_API.Application.Core;
 using NOLA_API.DataModels;
 
-namespace NOLA_API.Application.Advertisements
+namespace NOLA_API.Application.Drafts
 {
     public class GetOne
     {
-        public class Query : IRequest<Result<Advertisement>>
+        public class Query : IRequest<Result<Draft>>
         {
             public Guid Id { get; set; }
         }
-        public class Handler : IRequestHandler<Query, Result<Advertisement>>
+        public class Handler : IRequestHandler<Query, Result<Draft>>
         {
             private readonly DataContext _context;
 
@@ -20,12 +20,12 @@ namespace NOLA_API.Application.Advertisements
                 _context = context;
             }
 
-            public async Task<Result<Advertisement>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Draft>> Handle(Query request, CancellationToken cancellationToken)
             {
 
-                var ad = await _context.Ads
+                var draft = await _context.Drafts
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
-                return Result<Advertisement>.Success(ad);
+                return Result<Draft>.Success(draft);
             }
         }
     }

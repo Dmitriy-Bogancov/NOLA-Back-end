@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using NOLA_API.Application.Core;
 using NOLA_API.DataModels;
@@ -28,18 +24,23 @@ namespace NOLA_API.Application.Advertisements
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 // ReSharper disable once HeapView.BoxingAllocation
-                var adv = await _context.Ads.FindAsync(request.Advertisement.Id);
 
-                if (adv == null) return null;
+                var ad = await _context.Ads.FindAsync(request.Advertisement.Id);
+                if (ad == null) return null;
 
-                adv.Title = request.Advertisement.Title ?? adv.Title;
-                adv.Description = request.Advertisement.Description;
-                adv.Banner = request.Advertisement.Banner;
-                adv.Status = request.Advertisement.Status;
+                Process(request, ad);
 
                 var result = await _context.SaveChangesAsync() > 0;
                 if (!result) return Result<Unit>.Failure("Failed to update activity!");
                 return Result<Unit>.Success(Unit.Value);
+            }
+
+            static void Process(Command request, Advertisement? ad)
+            {
+                ad.Title = request.Advertisement.Title ?? ad.Title;
+                ad.Description = request.Advertisement.Description;
+                ad.Banners = request.Advertisement.Banners;
+                ad.Status = request.Advertisement.Status;
             }
         }
     }

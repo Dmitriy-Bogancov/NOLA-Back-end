@@ -29,7 +29,7 @@ namespace NOLA_API.Controllers
 
         //[Authorize(Policy = "IsOwner")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditActivity(Guid id, Advertisement advertisement)
+        public async Task<IActionResult> EditAdvertisement(Guid id, Advertisement advertisement)
         {
             advertisement.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command { Advertisement = advertisement }));
@@ -39,7 +39,7 @@ namespace NOLA_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAdvertisement(Guid id)
         {
-            return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
+            return HandleResult(await Mediator.Send(new Delete.Command {  Id = id }));
         }
 
         // [HttpPost("{id}/visit")]

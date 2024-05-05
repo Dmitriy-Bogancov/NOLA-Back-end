@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NOLA_API.Domain;
 using NOLA_API.DTOs;
+using NOLA_API.Extensions;
 using NOLA_API.Services;
 
 namespace NOLA_API.Controllers
@@ -39,6 +40,23 @@ namespace NOLA_API.Controllers
             }
 
             return Unauthorized();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserDto>> UpdateUser(UserDto userDto)
+        {
+            GetCurrentUser();
+
+            if (userDto == null) return NotFound();
+
+            var result = await _userManager.UpdateAsync(userDto.ToAppUser());
+
+            if (result.Succeeded)
+            {
+                return CreateUserObject(userDto.ToAppUser());
+            }
+
+            return BadRequest("Problem updating the user");
         }
 
         [AllowAnonymous]
