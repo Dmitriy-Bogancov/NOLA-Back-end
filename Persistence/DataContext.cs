@@ -29,9 +29,15 @@ public class DataContext : IdentityDbContext<AppUser>
             .WithMany(a => a.Visitors)
             .HasForeignKey(aa => aa.AdvertisementId);
 
-            builder.Entity<Link>(x => x.HasKey(aa => new { aa.AdvertisementId, aa.Id }));
-              builder.Entity<Link>()
+            builder.Entity<AdLink>(x => x.HasKey(aa => new { aa.AdvertisementId, aa.Id }));
+              builder.Entity<AdLink>()
             .HasOne(u => u.Advertisement)
+            .WithMany(a => a.Links)
+            .HasForeignKey(aa => aa.Id);
+
+              builder.Entity<DraftLink>(x => x.HasKey(aa => new { aa.DraftId, aa.Id }));
+              builder.Entity<DraftLink>()
+            .HasOne(u => u.Draft)
             .WithMany(a => a.Links)
             .HasForeignKey(aa => aa.Id);
     }

@@ -16,11 +16,11 @@ namespace NOLA_API.DataModels
         public Status Status { get; set; }
         public ICollection<AdVisitor> Visitors { get; set; } = new List<AdVisitor>();
 
-        public List<Link> Links { get; set; } = new List<Link>();
+        public List<AdLink> Links { get; set; } = new List<AdLink>();
     }
 }
 
-public class Link
+public class AdLink
 {
     public Guid AdvertisementId { get; set; }    
     public Guid Id { get; set; }
