@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Http.Json;
-using System.Text.Json;
 using NOLA_API.DataModels;
 using NOLA_API.Domain;
 
@@ -24,7 +21,7 @@ public class AdLink
 {
     public Guid AdvertisementId { get; set; }    
     public Guid Id { get; set; }
-    public Advertisement Advertisement { get; set; }
+    public Advertisement? Advertisement { get; set; }
     public string Action { get; set; }
     public string Href { get; set; }
 }
