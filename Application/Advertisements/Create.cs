@@ -44,7 +44,9 @@ namespace NOLA_API.Application.Advertisements
 
                     request.Advertisement.Visitors.Add(owner);
 
-                    request.Advertisement.Id = new Guid();
+                    request.Advertisement.Id = request.Advertisement.Id == Guid.Empty 
+                        ? Guid.NewGuid() 
+                        : request.Advertisement.Id;
                     request.Advertisement.Status = Status.Moderation;
                     _context.Ads.Add(request.Advertisement);
 
