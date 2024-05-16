@@ -10,8 +10,10 @@ namespace NOLA_API.Extensions
         {
             return new AppUser
             {
-                UserName = userDto.DisplayName,
-                Email = userDto.Email
+                UserName = userDto.UseName,
+                Email = userDto.Email,
+                Links = userDto.Links,
+                Image = userDto.Image
             };
         }
     }
