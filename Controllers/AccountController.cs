@@ -42,18 +42,23 @@ namespace NOLA_API.Controllers
             return Unauthorized();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<ActionResult<UserDto>> UpdateUser(UserDto userDto)
         {
-            var user = GetCurrentUser();
-
+            var user = (await GetCurrentUser()).Value;
+            var appUser = await _userManager.FindByEmailAsync(user.Email);
             if (user == null) return NotFound();
-
-            var result = await _userManager.UpdateAsync(userDto.ToAppUser());
-
+            if(!string.IsNullOrEmpty(userDto.UserName))appUser!.UserName = userDto.UserName;
+            if(!string.IsNullOrEmpty(userDto.Email))appUser!.Email = userDto.Email;
+            if(!string.IsNullOrEmpty(userDto.Image))appUser!.Image = userDto.Image;
+            if(userDto.Links != null)appUser!.Links = userDto.Links;
+            
+            
+            var result = await _userManager.UpdateAsync(appUser);
+   
             if (result.Succeeded)
             {
-                return CreateUserObject(userDto.ToAppUser());
+                return CreateUserObject(appUser);
             }
 
             return BadRequest("Problem updating the user");
@@ -105,8 +110,8 @@ namespace NOLA_API.Controllers
             return new UserDto
             {
                 Email = user.Email,
-                Image = string.Empty,
-                UserName = string.Empty,
+                Image = user.Image,
+                UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
             };
         }

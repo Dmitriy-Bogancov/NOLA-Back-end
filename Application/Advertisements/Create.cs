@@ -34,7 +34,7 @@ namespace NOLA_API.Application.Advertisements
 
                     if (user == null) return Result<Unit>.Failure("Looks like you are not logged in.");
                     if (user.EmailConfirmed == false) return Result<Unit>.Failure("Please confirm your email address.");
-                    if(string.IsNullOrEmpty(user.UserName) || user.Links.Count == 0) return Result<Unit>.Failure("Please update your profile first. (Add links and Username)");
+                    //if(string.IsNullOrEmpty(user.UserName) || user.Links.Count == 0) return Result<Unit>.Failure("Please update your profile first. (Add links and Username)");
                     var owner = new AdVisitor
                     {
                         AppUser = user,
