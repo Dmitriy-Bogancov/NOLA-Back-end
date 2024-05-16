@@ -45,9 +45,9 @@ namespace NOLA_API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> UpdateUser(UserDto userDto)
         {
-            GetCurrentUser();
+            var user = GetCurrentUser();
 
-            if (userDto == null) return NotFound();
+            if (user == null) return NotFound();
 
             var result = await _userManager.UpdateAsync(userDto.ToAppUser());
 
@@ -106,7 +106,7 @@ namespace NOLA_API.Controllers
             {
                 Email = user.Email,
                 Image = string.Empty,
-                DisplayName = string.Empty,
+                UseName = string.Empty,
                 Username = string.Empty,
                 Token = _tokenService.CreateToken(user),
             };
