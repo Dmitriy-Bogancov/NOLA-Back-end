@@ -106,7 +106,7 @@ namespace NOLA_API.Controllers
             {
                 Email = user.Email,
                 Image = string.Empty,
-                UseName = string.Empty,
+                UserName = string.Empty,
                 Username = string.Empty,
                 Token = _tokenService.CreateToken(user),
             };
