@@ -1,10 +1,10 @@
-
-
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NOLA_API.Application.Advertisements;
+using NOLA_API.Infrastructure.Messages;
 using NOLA_API.Infrastructure.Security;
 using NOLA_API.Interfaces;
+using NOLA_API.Services;
 
 namespace NOLA_API.Extensions
 {
@@ -35,6 +35,9 @@ namespace NOLA_API.Extensions
             services.AddMediatR(typeof(Show.Handler));
             services.AddHttpContextAccessor();
             services.AddScoped<IUserAccessor, UserAccessor>();
+
+            services.AddScoped<IEmailService, EmailService>();
+            services.Configure<EmailConfiguration>(config.GetSection("EmailConfiguration"));
 
             return services;
         }

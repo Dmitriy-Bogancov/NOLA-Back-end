@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using NOLA_API.Infrastructure.Security;
 using NOLA_API.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace NOLA_API.Extensions
 {
@@ -16,7 +17,10 @@ namespace NOLA_API.Extensions
         {
             opt.Password.RequireNonAlphanumeric = false;
             opt.User.RequireUniqueEmail = true;
-        }).AddEntityFrameworkStores<DataContext>();
+        }).AddEntityFrameworkStores<DataContext>()
+        .AddDefaultTokenProviders();
+
+        services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(2));
 
         var envToken = System.Environment.GetEnvironmentVariable("TOKEN_KEY", EnvironmentVariableTarget.Machine);
         var configToken = config["TokenKey"];
@@ -42,7 +46,7 @@ namespace NOLA_API.Extensions
         });
         services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
         services.AddScoped<TokenService>();
-        
+
         return services;
     }
     }
