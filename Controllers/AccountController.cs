@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NOLA_API.Domain;
 using NOLA_API.DTOs;
-using NOLA_API.Extensions;
+using NOLA_API.Infrastructure.Messages;
+using NOLA_API.Interfaces;
 using NOLA_API.Services;
 
 namespace NOLA_API.Controllers
@@ -17,11 +20,13 @@ namespace NOLA_API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly TokenService _tokenService;
+        private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<AppUser> userManager, TokenService tokenService)
+        public AccountController(UserManager<AppUser> userManager, TokenService tokenService, IEmailService emailService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _emailService = emailService;
         }
 
         [AllowAnonymous]
@@ -84,6 +89,20 @@ namespace NOLA_API.Controllers
 
                 if (result.Succeeded)
                 {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var confirmationLink = Url.Action(
+                        nameof(ConfirmEmail),
+                        "Account", 
+                        new { email = user.Email, token = token },
+                        Request.Scheme);
+
+                    Message message = new Message();
+                    message.Subject = "Registration at NOLA";
+                    message.Content = $"<p>You’re receiving this message because you recently signed up for a NOLA account. Please confirm your email address by clicking the link below: <a href='{confirmationLink}'>confirm</a></p>";
+
+                    await TrySendEmailAsync(user.Email, message);
+
                     return CreateUserObject(user);
                 }
 
@@ -105,6 +124,98 @@ namespace NOLA_API.Controllers
             return CreateUserObject(user);
         }
 
+        [AllowAnonymous]
+        [HttpGet("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return BadRequest("Mail is not registered in the system. Please try again.");
+            }
+                
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
+            {
+                return Ok("Email successfully confirmed.");
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([Required] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return BadRequest("Mail is not registered in the system. Please try again.");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var callbackUrl = Url.Action(
+                nameof(ResetPassword),
+                "Account",
+                new { email = email, token = token },
+                Request.Scheme);
+
+            Message message = new Message();
+            message.Subject = "Password Reset Instructions For NOLA Account";
+            message.Content = $"<p>Hello {user.UserName}</p><p>Click the link to reset your password for your NOLA account: <a href='{callbackUrl}'>reset password</a></p>";
+
+            try
+            {
+                await _emailService.SendAsync(user.Email, message);
+
+                return Ok("Password Reset Instructions have been sent by Email.");
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine(e);
+                return BadRequest("An error occurred while sending the email. Please try again later.");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Password not correct");
+            }
+
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+            if (user == null)
+            {
+                return BadRequest("Can not find user for change password");
+            }
+
+
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+            if (!resetPassResult.Succeeded)
+            {
+                foreach (var error in resetPassResult.Errors)
+                {
+                    ModelState.TryAddModelError(error.Code, error.Description);
+                }
+                return BadRequest(resetPassResult.Errors);
+            }
+            return Ok("Password was changed");
+        }
+
+        [HttpGet("reset-password")]
+        [AllowAnonymous]
+        public ActionResult<ResetPasswordDto> ResetPassword(string email, string token)
+        {
+            return new ResetPasswordDto { Token = token, Email = email };
+        }
+
         private ActionResult<UserDto> CreateUserObject(AppUser user)
         {
             return new UserDto
@@ -114,6 +225,18 @@ namespace NOLA_API.Controllers
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
             };
+        }
+
+        private async Task TrySendEmailAsync(string email, Message message)
+        {
+            try
+            {
+                await _emailService.SendAsync(email, message);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex);
+            }
         }
     }
 }
