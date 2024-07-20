@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ using NOLA_API.DTOs;
 using NOLA_API.Infrastructure.Messages;
 using NOLA_API.Interfaces;
 using NOLA_API.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NOLA_API.Controllers
 {
@@ -56,9 +58,11 @@ namespace NOLA_API.Controllers
             if(!string.IsNullOrEmpty(userDto.UserName))appUser!.UserName = userDto.UserName;
             if(!string.IsNullOrEmpty(userDto.Email))appUser!.Email = userDto.Email;
             if(!string.IsNullOrEmpty(userDto.Image))appUser!.Image = userDto.Image;
-            if(userDto.Links != null)appUser!.Links = userDto.Links;
-            
-            
+            if (!string.IsNullOrEmpty(userDto.Description)) appUser!.Description = userDto.Description;
+            if (!string.IsNullOrEmpty(userDto.EntityName)) appUser!.EntityName = userDto.EntityName;
+            //if(userDto.Links != null)appUser!.Links = userDto.Links;
+
+
             var result = await _userManager.UpdateAsync(appUser);
    
             if (result.Succeeded)
@@ -78,11 +82,31 @@ namespace NOLA_API.Controllers
                 ModelState.AddModelError("email", "Email is already taken!");
                 return ValidationProblem();
             }
+
+            string initials = GetInitials(registerDto.EntityName).ToUpper();
+            var avatarImage = Avatar(initials);
+            var base64String = string.Empty;
+
+
+            using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
+            {            
+                avatarImage.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+                byte[] bytes = stream.ToArray();
+                base64String = System.Convert.ToBase64String(bytes);
+            }
+
+
+
+
             var user = new AppUser
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Email.Split("@")[0].ToLower()
+                UserName = registerDto.Email.Split("@")[0].ToLower(),
+                EntityName = registerDto.EntityName,
+                Image = base64String
             };
+
+
             try
             {
                 var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -224,6 +248,8 @@ namespace NOLA_API.Controllers
                 Image = user.Image,
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
+                Description = user.Description,
+                EntityName = user.EntityName
             };
         }
 
@@ -237,6 +263,61 @@ namespace NOLA_API.Controllers
             {
                 System.Console.WriteLine(ex);
             }
+        }
+
+
+
+        private System.Drawing.Image Avatar(string nameInput)
+        {
+            using (var bitmap = new Bitmap(50, 50))
+            {
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    g.Clear(Color.White);
+                    using (Brush b = new SolidBrush(Color.SkyBlue))
+                    {
+
+                        g.FillEllipse(b, 0, 0, 49, 49);
+                    }
+
+                    float emSize = 12;
+                    g.DrawString(nameInput, new System.Drawing.Font(FontFamily.GenericSansSerif, emSize, FontStyle.Regular),
+                        new SolidBrush(Color.White), 10, 15);
+                }
+
+                using (var memStream = new System.IO.MemoryStream())
+                {
+                    bitmap.Save(memStream, System.Drawing.Imaging.ImageFormat.Png);
+                    return System.Drawing.Image.FromStream(memStream);
+                }
+            }
+        }
+
+
+        private string GetInitials(string entityName)
+        {
+            string initials = string.Empty;
+
+
+            if (entityName.Contains(' '))
+            {
+                foreach (var item in entityName.Split(' '))
+                {
+                    if (initials.Length < 2)
+                    {
+                        initials += item[0];
+                    }
+                }
+            }
+            else
+            {
+                initials = entityName[0].ToString() + entityName[1].ToString();
+            }
+
+
+
+            return initials;
+
         }
     }
 }

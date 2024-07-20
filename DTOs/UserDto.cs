@@ -6,6 +6,8 @@ namespace NOLA_API.DTOs
         public string? Token { get; set; }
         public string? Image { get; set; } 
         public string? Email { get; set; }
-        public List<string>? Links { get; set; }
+        public string? Description { get; set; }
+        public string? EntityName { get; set; }
+        //public List<string>? Links { get; set; }
     }
 }

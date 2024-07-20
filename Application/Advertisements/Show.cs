@@ -27,20 +27,24 @@ namespace NOLA_API.Application.Advertisements
 
                 var ads = await _context.Ads
                     .ToListAsync(cancellationToken);
-                    var adsDto = new List<AdvertisementDto>();
-                    ads.ForEach(a=> {
-                        var adDto = new AdvertisementDto
-                        {
-                            Id = a.Id,
-                            Title = a.Title,
-                            Description = a.Description,
-                            Banners = a.Banners,
-                            Links = a.Links,
-                            Visitors = a.Visitors.Select(v => v.ToProfile()).ToList()
-                        };
+                var adsDto = new List<AdvertisementDto>();
+                ads.ForEach(a => {
+                    var adDto = new AdvertisementDto
+                    {
+                        Id = a.Id,
+                        Title = a.Title,
+                        Description = a.Description,
+                        Banners = a.Banners,
+                        Links = a.Links,
+                        Visitors = a.Visitors.Select(v => v.ToProfile()).ToList(),
+                        Status = a.Status,
+                    };
+                    if (a.Status == Status.Active || a.Status == Status.Moderation)
+                    {
                         adsDto.Add(adDto);
-                    
-                    });
+                    }
+
+                });
                 return Result<List<AdvertisementDto>>.Success(adsDto);
             }
         }

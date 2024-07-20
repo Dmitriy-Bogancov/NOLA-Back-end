@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NOLA_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240516162303_update uyser model")]
+    [Migration("20240516162303_updateuysermodel")]
     partial class updateuysermodel
     {
         /// <inheritdoc />
