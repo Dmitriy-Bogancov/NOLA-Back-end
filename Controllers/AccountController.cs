@@ -90,7 +90,7 @@ namespace NOLA_API.Controllers
 
             using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
             {            
-                avatarImage.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+                avatarImage.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 byte[] bytes = stream.ToArray();
                 base64String = System.Convert.ToBase64String(bytes);
             }
