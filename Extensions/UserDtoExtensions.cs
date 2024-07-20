@@ -12,8 +12,8 @@ namespace NOLA_API.Extensions
             {
                 UserName = userDto.UserName,
                 Email = userDto.Email,
-                Links = userDto.Links,
-                Image = userDto.Image
+                //Links = userDto.Links,
+                Image = userDto.Image,
             };
         }
     }

@@ -27,15 +27,16 @@ namespace NOLA_API.Application.Advertisements
 
                 var ad = await _context.Ads
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
-                    var dto = new AdvertisementDto
-                    {
-                        Id = ad.Id,
-                        Title = ad.Title,
-                        Description = ad.Description,
-                        Banners = ad.Banners,
-                        Links = ad.Links,
-                        Visitors = ad.Visitors.Select(v => v.ToProfile()).ToList()
-                    };
+                var dto = new AdvertisementDto
+                {
+                    Id = ad.Id,
+                    Title = ad.Title,
+                    Description = ad.Description,
+                    Banners = ad.Banners,
+                    Links = ad.Links,
+                    Visitors = ad.Visitors.Select(v => v.ToProfile()).ToList(),
+                    Status = ad.Status,
+                };
                 return Result<AdvertisementDto>.Success(dto);
             }
         }
