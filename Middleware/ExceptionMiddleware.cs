@@ -2,35 +2,26 @@ using System.Net;
 using System.Text.Json;
 using NOLA_API.Application.Core;
 
-namespace NOLA_API.Middleware
-{
-public class ExceptionMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionMiddleware> _logger;
-    private readonly IHostEnvironment _env;
+namespace NOLA_API.Middleware;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, 
-        IHostEnvironment env)
-    {
-        _next = next;
-        _logger = logger;
-        _env = env;
-    }
-
+public class ExceptionMiddleware(
+    RequestDelegate next,
+    ILogger<ExceptionMiddleware> logger,
+    IHostEnvironment env)
+{
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            logger.LogError(ex, ex.Message);
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var response = _env.IsDevelopment()
+            var response = env.IsDevelopment()
                 ? new AppException(context.Response.StatusCode, ex.Message, ex.StackTrace?.ToString())
                 : new AppException(context.Response.StatusCode, "Internal Server Error");
 
@@ -41,5 +32,4 @@ public class ExceptionMiddleware
             await context.Response.WriteAsync(json);
         }
     }
-}
 }

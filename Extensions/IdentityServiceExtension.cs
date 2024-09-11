@@ -7,18 +7,18 @@ using NOLA_API.Infrastructure.Security;
 using NOLA_API.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace NOLA_API.Extensions
+namespace NOLA_API.Extensions;
+
+public static class IdentityServiceExtension
 {
-    public static class IdentityServiceExtension
-    {
-        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddIdentityCore<AppUser>(opt =>
-        {
-            opt.Password.RequireNonAlphanumeric = false;
-            opt.User.RequireUniqueEmail = true;
-        }).AddEntityFrameworkStores<DataContext>()
-        .AddDefaultTokenProviders();
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders();
 
         services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(2));
 
@@ -48,6 +48,5 @@ namespace NOLA_API.Extensions
         services.AddScoped<TokenService>();
 
         return services;
-    }
     }
 }

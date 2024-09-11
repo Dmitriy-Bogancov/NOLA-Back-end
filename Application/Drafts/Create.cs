@@ -5,45 +5,36 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NOLA_API.DataModels;
 
-namespace NOLA_API.Application.Drafts
+namespace NOLA_API.Application.Drafts;
+
+public class Create
 {
-        public class Create
+    public class Command : IRequest<Result<Unit>>
+    {
+        public Draft Draft { get; set; }
+    }
+
+    public class Handler(DataContext context, IUserAccessor userAccessor)
+        : IRequestHandler<Command, Result<Unit>>
+    {
+        public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            public class Command : IRequest<Result<Unit>>
-            {
-                public Draft Draft { get; set; }
-            }
+            var user = await context.Users.FirstOrDefaultAsync(x =>
+                x.UserName == userAccessor.GetUsername(), cancellationToken: cancellationToken);
 
-            public class Handler : IRequestHandler<Command, Result<Unit>>
-            {
-                private readonly DataContext _context;
-                private readonly IUserAccessor _userAccessor;
+            if (user == null) return Result<Unit>.Failure("Looks like you are not logged in.");
+            if (user.EmailConfirmed == false) return Result<Unit>.Failure("Please confirm your email address.");
+            if(string.IsNullOrEmpty(user.UserName) || user.Links.Count == 0) return Result<Unit>.Failure("Please update your profile first.");
 
-                public Handler(DataContext context, IUserAccessor userAccessor)
-                {
-                    _context = context;
-                    _userAccessor = userAccessor;
-                }
+            request.Draft.UserId = user.Id;
 
-                public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
-                {
-                    var user = await _context.Users.FirstOrDefaultAsync(x =>
-                        x.UserName == _userAccessor.GetUsername());
+            request.Draft.Id = new Guid();
+            context.Drafts.Add(request.Draft);
 
-                    if (user == null) return Result<Unit>.Failure("Looks like you are not logged in.");
-                    if (user.EmailConfirmed == false) return Result<Unit>.Failure("Please confirm your email address.");
-                    if(string.IsNullOrEmpty(user.UserName) || user.Links.Count == 0) return Result<Unit>.Failure("Please update your profile first.");
+            var result = await context.SaveChangesAsync(cancellationToken) > 0;
 
-                    request.Draft.UserId = user.Id;
-
-                    request.Draft.Id = new Guid();
-                    _context.Drafts.Add(request.Draft);
-
-                    var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-
-                    if (!result) return Result<Unit>.Failure("Failed to create advertisement.");
-                    return Result<Unit>.Success(Unit.Value);
-                }
-            }
+            if (!result) return Result<Unit>.Failure("Failed to create advertisement.");
+            return Result<Unit>.Success(Unit.Value);
         }
     }
+}

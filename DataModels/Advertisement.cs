@@ -13,7 +13,7 @@ namespace NOLA_API.DataModels
         public Status Status { get; set; }
         public ICollection<AdVisitor> Visitors { get; set; } = new List<AdVisitor>();
 
-        public List<AdLink> Links { get; set; } = new List<AdLink>();
+        public List<AdLink> Links { get; set; } = [];
     }
 }
 

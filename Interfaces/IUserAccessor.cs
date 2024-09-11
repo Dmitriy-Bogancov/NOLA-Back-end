@@ -1,7 +1,6 @@
-namespace NOLA_API.Interfaces
+namespace NOLA_API.Interfaces;
+
+public interface IUserAccessor
 {
-    public interface IUserAccessor
-    {
-        string GetUsername();
-    }
+    string GetUsername();
 }

@@ -2,37 +2,28 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace NOLA_API.Infrastructure.Security
-{
-   public class IsHostRequirement : IAuthorizationRequirement
+namespace NOLA_API.Infrastructure.Security;
+
+public class IsHostRequirement : IAuthorizationRequirement
 {
 }
 
-public class IsHostRequirementHandler : AuthorizationHandler<IsHostRequirement>
+public class IsHostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
+    : AuthorizationHandler<IsHostRequirement>
 {
-    private readonly DataContext _dbContext;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public IsHostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
-    {
-        _dbContext = dbContext;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
         IsHostRequirement requirement)
     {
         var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null) return Task.CompletedTask;
 
-        var activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues
+        var activityId = Guid.Parse(httpContextAccessor.HttpContext?.Request.RouteValues
             .SingleOrDefault(x => x.Key == "id").Value?.ToString());
-        var attendee = _dbContext.AdsVistors.AsNoTracking()
+        var attendee = dbContext.AdsVistors.AsNoTracking()
             .SingleOrDefaultAsync(x => x.AppUserId == userId && x.AdvertisementId == activityId).Result;
         if (attendee == null) return Task.CompletedTask;
         if (attendee.IsOwner) context.Succeed(requirement);
 
         return Task.CompletedTask;
     }
-}
 }

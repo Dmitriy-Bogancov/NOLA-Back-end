@@ -4,12 +4,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using NOLA_API.DataModels;
 using NOLA_API.Domain;
 
-public class DataContext : IdentityDbContext<AppUser>
+public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser>(options)
 {
-    public DataContext(DbContextOptions options) : base(options)
-    {
-    }
-
     public DbSet<Advertisement> Ads { get; set; }
     public DbSet<Draft> Drafts { get; set; }
     public DbSet<AdVisitor> AdsVistors { get; set; }

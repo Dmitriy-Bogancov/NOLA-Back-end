@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace NOLA_API.DataModels
+namespace NOLA_API.DataModels;
+
+public class Profile : IdentityUser
 {
-    public class Profile : IdentityUser
-    {
-        public string Image { get; set; } = "";
-    }
+    public string Image { get; set; } = "";
 }
