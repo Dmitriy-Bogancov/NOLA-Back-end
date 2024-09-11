@@ -10,7 +10,7 @@ public static class WebHostBuilderExtensions
 {
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddHostedService<MigrationService>();
+        // builder.Services.AddHostedService<MigrationService>();
 
         builder.Services.AddControllers(opt =>
         {
