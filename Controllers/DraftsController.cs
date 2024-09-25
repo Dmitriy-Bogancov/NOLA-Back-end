@@ -4,7 +4,7 @@ using NOLA_API.DataModels;
 
 namespace NOLA_API.Controllers
 {
-   // [Authorize(Policy = "IsOwner")]
+    // [Authorize(Policy = "IsOwner")]
     public class DraftsController : BaseApiController
     {
         [HttpGet]
@@ -19,7 +19,7 @@ namespace NOLA_API.Controllers
             return HandleResult(await Mediator.Send(new GetOne.Query { Id = id }));
         }
 
-        [HttpPost]        
+        [HttpPost]
         public async Task<IActionResult> AddDraft(Draft draft)
         {
             return HandleResult(await Mediator.Send(new Create.Command { Draft = draft }));

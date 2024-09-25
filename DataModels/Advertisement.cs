@@ -19,7 +19,7 @@ namespace NOLA_API.DataModels
 
 public class AdLink
 {
-    public Guid AdvertisementId { get; set; }    
+    public Guid AdvertisementId { get; set; }
     public Guid Id { get; set; }
     public Advertisement? Advertisement { get; set; }
     public string Action { get; set; }

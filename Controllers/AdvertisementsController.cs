@@ -39,7 +39,7 @@ namespace NOLA_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAdvertisement(Guid id)
         {
-            return HandleResult(await Mediator.Send(new Delete.Command {  Id = id }));
+            return HandleResult(await Mediator.Send(new Delete.Command { Id = id }));
         }
 
         // [HttpPost("{id}/visit")]
