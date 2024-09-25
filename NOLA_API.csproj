@@ -22,4 +22,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\dev\csharp\NOLA\NOLA-backend\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\dev\csharp\NOLA\NOLA-backend\.editorconfig" />
+  </ItemGroup>
+
 </Project>
