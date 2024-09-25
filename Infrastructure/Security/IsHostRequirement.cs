@@ -4,35 +4,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NOLA_API.Infrastructure.Security
 {
-   public class IsHostRequirement : IAuthorizationRequirement
-{
-}
-
-public class IsHostRequirementHandler : AuthorizationHandler<IsHostRequirement>
-{
-    private readonly DataContext _dbContext;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public IsHostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
+    public class IsHostRequirement : IAuthorizationRequirement
     {
-        _dbContext = dbContext;
-        _httpContextAccessor = httpContextAccessor;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-        IsHostRequirement requirement)
+    public class IsHostRequirementHandler : AuthorizationHandler<IsHostRequirement>
     {
-        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null) return Task.CompletedTask;
+        private readonly DataContext _dbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        var activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues
-            .SingleOrDefault(x => x.Key == "id").Value?.ToString());
-        var attendee = _dbContext.AdsVistors.AsNoTracking()
-            .SingleOrDefaultAsync(x => x.AppUserId == userId && x.AdvertisementId == activityId).Result;
-        if (attendee == null) return Task.CompletedTask;
-        if (attendee.IsOwner) context.Succeed(requirement);
+        public IsHostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
+        {
+            _dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-        return Task.CompletedTask;
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+            IsHostRequirement requirement)
+        {
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Task.CompletedTask;
+
+            var activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues
+                .SingleOrDefault(x => x.Key == "id").Value?.ToString());
+            var attendee = _dbContext.AdsVistors.AsNoTracking()
+                .SingleOrDefaultAsync(x => x.AppUserId == userId && x.AdvertisementId == activityId).Result;
+            if (attendee == null) return Task.CompletedTask;
+            if (attendee.IsOwner) context.Succeed(requirement);
+
+            return Task.CompletedTask;
+        }
     }
-}
 }

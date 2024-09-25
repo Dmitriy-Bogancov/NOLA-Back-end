@@ -6,7 +6,7 @@ namespace NOLA_API.DTOs
 {
     public class AdvertisementDto
     {
-          public Guid Id { get; set; }
+        public Guid Id { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
         public required string[] Banners { get; set; }

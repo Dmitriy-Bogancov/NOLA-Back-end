@@ -12,42 +12,42 @@ namespace NOLA_API.Extensions
     public static class IdentityServiceExtension
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
-    {
-        services.AddIdentityCore<AppUser>(opt =>
         {
-            opt.Password.RequireNonAlphanumeric = false;
-            opt.User.RequireUniqueEmail = true;
-        }).AddEntityFrameworkStores<DataContext>()
-        .AddDefaultTokenProviders();
-
-        services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(2));
-
-        var envToken = System.Environment.GetEnvironmentVariable("TOKEN_KEY", EnvironmentVariableTarget.Machine);
-        var configToken = config["TokenKey"];
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(envToken ?? configToken));
-        
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(opt =>
+            services.AddIdentityCore<AppUser>(opt =>
             {
-                opt.TokenValidationParameters = new TokenValidationParameters
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders();
+
+            services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(2));
+
+            var envToken = System.Environment.GetEnvironmentVariable("TOKEN_KEY", EnvironmentVariableTarget.Machine);
+            var configToken = config["TokenKey"];
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(envToken ?? configToken));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = key,
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-        services.AddAuthorization(opt =>
-        {
-            opt.AddPolicy("IsActivityHost", policy =>
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = key,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+            services.AddAuthorization(opt =>
             {
-                policy.Requirements.Add(new IsHostRequirement());
+                opt.AddPolicy("IsActivityHost", policy =>
+                {
+                    policy.Requirements.Add(new IsHostRequirement());
+                });
             });
-        });
-        services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
-        services.AddScoped<TokenService>();
+            services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+            services.AddScoped<TokenService>();
 
-        return services;
-    }
+            return services;
+        }
     }
 }

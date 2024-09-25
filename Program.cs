@@ -19,7 +19,8 @@ builder.Services.AddControllers(opt =>
 });
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
-builder.Services.AddSwaggerGen(option => {
+builder.Services.AddSwaggerGen(option =>
+{
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "NOLA_API", Version = "v1" });
     option.CustomSchemaIds(x => x.FullName);
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -51,7 +52,7 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 //add swagger bearer authentication
 
-app.UseSwagger(); 
+app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("CorsPolicy");

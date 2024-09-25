@@ -53,14 +53,14 @@ namespace NOLA_API.Controllers
             var user = (await GetCurrentUser()).Value;
             var appUser = await _userManager.FindByEmailAsync(user.Email);
             if (user == null) return NotFound();
-            if(!string.IsNullOrEmpty(userDto.UserName))appUser!.UserName = userDto.UserName;
-            if(!string.IsNullOrEmpty(userDto.Email))appUser!.Email = userDto.Email;
-            if(!string.IsNullOrEmpty(userDto.Image))appUser!.Image = userDto.Image;
-            if(userDto.Links != null)appUser!.Links = userDto.Links;
-            
-            
+            if (!string.IsNullOrEmpty(userDto.UserName)) appUser!.UserName = userDto.UserName;
+            if (!string.IsNullOrEmpty(userDto.Email)) appUser!.Email = userDto.Email;
+            if (!string.IsNullOrEmpty(userDto.Image)) appUser!.Image = userDto.Image;
+            if (userDto.Links != null) appUser!.Links = userDto.Links;
+
+
             var result = await _userManager.UpdateAsync(appUser);
-   
+
             if (result.Succeeded)
             {
                 return CreateUserObject(appUser);
@@ -93,7 +93,7 @@ namespace NOLA_API.Controllers
 
                     var confirmationLink = Url.Action(
                         nameof(ConfirmEmail),
-                        "Account", 
+                        "Account",
                         new { email = user.Email, token = token },
                         Request.Scheme);
 
@@ -134,7 +134,7 @@ namespace NOLA_API.Controllers
             {
                 return BadRequest("Mail is not registered in the system. Please try again.");
             }
-                
+
             var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded)

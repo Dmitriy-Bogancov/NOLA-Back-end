@@ -164,7 +164,7 @@ namespace NOLA_API.Persistence
                     {
                         Title = "Future ad 5",
                         CreatedAt = DateTime.UtcNow.AddMonths(5),
-                        Banners = [ 
+                        Banners = [
                             "https://www.shutterstock.com/shutterstock/photos/2289914959/display_1500/stock-vector-yellow-duct-tape-for-photo-collage-bright-scotch-tape-for-the-frame-collage-frame-with-girl-s-2289914959.jpg",
                         ],
                         Description = "ad 5 months in future",
